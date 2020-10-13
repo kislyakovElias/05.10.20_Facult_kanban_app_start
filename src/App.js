@@ -1,19 +1,23 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Column from './Column'
 import 'bootstrap/dist/css/bootstrap.css'
+import Controller from "./Controller";
+import Edit from "./Edit";
+import axios from "axios"
+
 
   const taskArray = [
-    {id:Math.random(), name: 'Drink', status: 'todo'},
-    {id:Math.random(), name: 'Eat', status: 'todo'},
-    {id:Math.random(), name: 'Sleep', status: 'todo'},
-    {id:Math.random(), name: 'Workout', status: 'todo'},
-    {id:Math.random(), name: 'Chill', status: 'todo'},
-    {id:Math.random(), name: 'FE5', status: 'progress'},
-    {id:Math.random(), name: 'Code', status: 'review'},
-    {id:Math.random(), name: 'More code', status: 'review'},
-    {id:Math.random(), name: 'Learn more', status: 'review'},
-    {id:Math.random(), name: 'Even more', status: 'review'},
-    {id:Math.random(), name: 'Sit and look in monitor', status: 'done'},
+    {id:Math.random(), name: 'Drink', status: 'todo', priority:1 },
+    {id:Math.random(), name: 'Eat', status: 'todo', priority:1},
+    {id:Math.random(), name: 'Sleep', status: 'todo', priority:1},
+    {id:Math.random(), name: 'Workout', status: 'todo', priority:1},
+    {id:Math.random(), name: 'Chill', status: 'todo', priority:1},
+    {id:Math.random(), name: 'FE5', status: 'progress', priority:1},
+    {id:Math.random(), name: 'Code', status: 'review', priority:1},
+    {id:Math.random(), name: 'More code', status: 'review', priority:1},
+    {id:Math.random(), name: 'Learn more', status: 'review', priority:1},
+    {id:Math.random(), name: 'Even more', status: 'review', priority:1},
+    {id:Math.random(), name: 'Sit and look in monitor', status: 'done', priority:1},
   ];
 
   const columnArray = [
@@ -29,6 +33,33 @@ function App() {
 
   const [task, setTask] = useState(taskArray);
 
+  useEffect( ()=>{
+    axios.get('http://nazarov-kanban-server.herokuapp.com/card')
+        .then(res => setTask(res.data))
+        .catch(err => console.log(err))
+  }, [])
+
+  const createTask = (newName, newStatus) => {
+    console.log(newName, newStatus);
+    const newTask = [...task, { id: Math.random(), name: newName, status: newStatus, description: ''}];
+    setTask(newTask)
+  }
+
+  const editTask = (id, nameInput, statusInput) =>{
+    const newArr = task.map(el =>{
+      if(el.id === id) return {task, id: Math.random(), name: nameInput, status: statusInput, priority: 1
+      }
+      return el
+    })
+  setTask(newArr)
+  }
+
+
+  const del=(taskId)=>{
+    const newList = task.filter(el => el.id !== taskId)
+    setTask(newList)
+  }
+
   const changeTaskStatus = (taskId, direction) => {
     const newTasks = task.map(el => {
       if(el.id === taskId){
@@ -40,50 +71,55 @@ return el
 setTask(newTasks)
   }
 
+ const changePriority = (id,value)=>{
+    const newArr = task.map(el => {
+      if (id === el.id) el.priority = el.priority + value;
+      return el;
+    })
+   setTask(newArr)
+ }
+
+
   console.log('tasks', task)
+
+  const deleteTask = async (id) => {
+   const result = await axios.delete(`http://nazarov-kanban-server.herokuapp.com/card/${id}` )
+        .then(res => {
+          return res
+        })
+       .catch(err => {
+         return err
+         console.log(err)
+       })
+    console.log(result)
+    if (result.status === 200)
+       await axios.get('http://nazarov-kanban-server.herokuapp.com/card')
+              .then(res => {
+                setTask(res.data)
+                console.log(res)
+              })
+              .catch(err => {
+                console.log(err)
+              })
+}
 
   return (
     <div className='container'>
-    <div className='row'>{columnArray.map((el, index) => <Column column={el}
+    <div className='row'>{columnArray.map((el, index) => <Column  column={el}
                                                         tasks={task}
                                                         changeTaskStatus={changeTaskStatus}
                                                         index={index}
                                                         statuses={statuses}
+                                                        del={del}
+                                                        changePriority={changePriority}
+                                                        editTask={editTask}
+                                                        deleteTask={deleteTask}
 
 
     />)}
+    <Controller createTask={createTask}/>
+
     </div>
-    <>
-
-      <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">
-        Launch static backdrop modal
-      </button>
-
-
-      <div className="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabIndex="-1"
-           aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="staticBackdropLabel">Modal title</h5>
-              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div className="modal-body">
-              .
-              .
-              .
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="button" className="btn btn-primary">Understood</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </>
     </div>
   );
 }
