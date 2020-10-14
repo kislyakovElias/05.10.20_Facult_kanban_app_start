@@ -39,7 +39,7 @@ function Edit(props) {
 
             </ModalBody>
             <ModalFooter>
-                <Button color="info" onClick={editButtonHandler}>Edit 🐄</Button>{' '}
+                <Button color="info" onClick={editButtonHandler}>Edit <span>🐄</span></Button>{' '}
                 <Button color="warning" onClick={toggle}>Cancel</Button>
             </ModalFooter>
         </Modal>

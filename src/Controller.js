@@ -24,7 +24,7 @@ function Controller(props) {
     <div >
         <Button color="danger" onClick={toggle}>Task Add </Button>
         <Modal isOpen={modal} toggle={toggle} >
-            <ModalHeader toggle={toggle}>Fill the form 🏝️</ModalHeader>
+            <ModalHeader toggle={toggle}>Fill the form <span>🏝️</span></ModalHeader>
             <ModalBody>
                 <Label >Name: </Label>{' '}
                 <Input type="text" placeholder="input Name here" value={nameInput} onChange={event => setNameInput(event.target.value)} />
@@ -32,15 +32,16 @@ function Controller(props) {
                 <Input type="select" value={statusInput} onChange={event => setStatusInput(event.target.value)}>
                     <option value='todo'>To do</option>
                     <option value='progress'>In progress</option>
-                    <option selected='true' value='review'>Review</option>
+                    <option  defaultValue='review' value='review'>Review</option>
+                    {/*selected={true}*/}
                     <option value='done'>Done</option>
                     </Input>
 
 
             </ModalBody>
             <ModalFooter>
-                <Button color="primary" onClick={createButtonHandler}>Create new task 🐶</Button>{' '}
-                <Button color="secondary" onClick={toggle}> 🐍 Cancel</Button>
+                <Button color="primary" onClick={createButtonHandler}>Create new task <span>🐶</span></Button>{' '}
+                <Button color="secondary" onClick={toggle}> <span>🐍</span> Cancel</Button>
             </ModalFooter>
         </Modal>
 

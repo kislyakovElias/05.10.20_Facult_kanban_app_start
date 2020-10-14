@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import Column from './Column'
 import 'bootstrap/dist/css/bootstrap.css'
 import Controller from "./Controller";
-import Edit from "./Edit";
 import axios from "axios"
 
 
@@ -29,7 +28,7 @@ import axios from "axios"
 
   const statuses = ["todo", "progress", "review", "done"];
 
-function App() {
+function App(props) {
 
   const [task, setTask] = useState(taskArray);
 
@@ -39,11 +38,35 @@ function App() {
         .catch(err => console.log(err))
   }, [])
 
-  const createTask = (newName, newStatus) => {
-    console.log(newName, newStatus);
-    const newTask = [...task, { id: Math.random(), name: newName, status: newStatus, description: ''}];
-    setTask(newTask)
-  }
+  // const createTask = (newName, newStatus) => {
+  //   console.log(newName, newStatus);
+  //   const newTask = [...task, { id: Math.random(), name: newName, status: newStatus, description: ''}];
+  //   setTask(newTask)
+  // }
+
+
+  const createTask =  (newName, newStatus) => {
+    const params = {id: Math.random(), name: newName, status: newStatus, description: '' }
+
+    axios.post('http://nazarov-kanban-server.herokuapp.com/card', params)
+        .then(res => {
+            axios.get('http://nazarov-kanban-server.herokuapp.com/card')
+                .then(res => {
+                    setTask(res.data);
+                    console.log(res);
+                })
+                .catch(err => {
+                    console.log(err)
+
+                })
+
+        })
+        .catch(error => {
+          console.log(error)
+                })
+           }
+
+
 
   const editTask = (id, nameInput, statusInput) =>{
     const newArr = task.map(el =>{
@@ -55,10 +78,10 @@ function App() {
   }
 
 
-  const del=(taskId)=>{
-    const newList = task.filter(el => el.id !== taskId)
-    setTask(newList)
-  }
+  // const del=(taskId)=>{
+  //   const newList = task.filter(el => el.id !== taskId)
+  //   setTask(newList)
+  // }
 
   const changeTaskStatus = (taskId, direction) => {
     const newTasks = task.map(el => {
@@ -88,12 +111,11 @@ setTask(newTasks)
           return res
         })
        .catch(err => {
-         return err
-         console.log(err)
+          console.log(err)
        })
     console.log(result)
     if (result.status === 200)
-       await axios.get('http://nazarov-kanban-server.herokuapp.com/card')
+        axios.get('http://nazarov-kanban-server.herokuapp.com/card')
               .then(res => {
                 setTask(res.data)
                 console.log(res)
@@ -104,20 +126,21 @@ setTask(newTasks)
 }
 
   return (
+
     <div className='container'>
-    <div className='row'>{columnArray.map((el, index) => <Column  column={el}
+    <div className='row'>{columnArray.map((el, index) => <Column key={Math.random()}  column={el}
                                                         tasks={task}
                                                         changeTaskStatus={changeTaskStatus}
                                                         index={index}
                                                         statuses={statuses}
-                                                        del={del}
+                                                        // del={del}
                                                         changePriority={changePriority}
                                                         editTask={editTask}
                                                         deleteTask={deleteTask}
 
 
     />)}
-    <Controller createTask={createTask}/>
+    <Controller key={Math.random()} createTask={createTask}/>
 
     </div>
     </div>
