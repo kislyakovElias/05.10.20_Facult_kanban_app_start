@@ -8,12 +8,15 @@ function Edit(props) {
     const [editMode, setEditMode] = useState(false);
     const [nameInput, setNameInput] = useState('');
     const [statusInput, setStatusInput] = useState('todo');
+    const [descriptionInput, setDescriptionInput] = useState('');
+
 
     const editButtonHandler = () => {
-        props.editTask(props.task.id, nameInput, statusInput);
+        props.editTask(props.task._id, nameInput, statusInput, descriptionInput);
         setEditMode(false)
         setNameInput('')
         setStatusInput('todo')
+        setDescriptionInput('')
     }
 
 
@@ -35,6 +38,9 @@ function Edit(props) {
                     <option selected='true' value='review'>Review</option>
                     <option value='done'>Done</option>
                     </Input>
+                <Label >Descr: </Label>{' '}
+                <Input type="text" value={props.val} placeholder="input Name here"  onChange={event => setDescriptionInput(event.target.value)}  />
+
 
 
             </ModalBody>
